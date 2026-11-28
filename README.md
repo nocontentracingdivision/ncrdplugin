@@ -2,7 +2,7 @@
 
 Official NCRD installers and update packages. Application source code is maintained privately.
 
-- [Download NCRD Overlays 0.1.100](https://github.com/nocontentracingdivision/ncrdplugin/releases/download/standalone-v0.1.100/NCRD-Overlays-Setup-0.1.100.exe)
+- [Download NCRD Overlays 0.1.101](https://github.com/nocontentracingdivision/ncrdplugin/releases/download/standalone-v0.1.101/NCRD-Overlays-Setup-0.1.101.exe)
 - [All public releases](https://github.com/nocontentracingdivision/ncrdplugin/releases)
 - [NCRD](https://ncrd.online)
 
