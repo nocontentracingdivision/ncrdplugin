@@ -27,8 +27,8 @@ while selected-done:
     for a in bytag[tag]["assets"]:
         if a["name"].startswith("updates") and a["name"].endswith(".json"):
             r=requests.get(a["browser_download_url"],timeout=120);r.raise_for_status()
-            manifest=r.text.replace("\\\\/","/")
-            for match in re.findall(r"github.com/nocontentracingdivision/ncrdplugin/releases/download/([^/\\s\\\"]+)/",manifest):
+            manifest=r.text.replace(chr(92)+"/","/")
+            for match in re.findall(r"github.com/nocontentracingdivision/ncrdplugin/releases/download/([^/]+)/",manifest):
                 selected.add(urllib.parse.unquote(match))
     done.add(tag)
 releases=[bytag[t] for t in selected]
