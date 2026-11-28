@@ -13,7 +13,26 @@ def api(method,path,**kw):
         return r.json() if r.content else None
     raise RuntimeError("API retries exhausted: "+path)
 with open("releases.json") as f: releases=json.load(f)
+# Preserve the current channels, rollback version, all manifest dependencies,
+# and any releases already copied by the initial archive pass.
+import re
+bytag={r["tag_name"]:r for r in releases}
+selected={"v0.9.112","standalone-v0.1.100","standalone-v0.1.99"}
+done=set()
 existing={r["tag_name"]:r for page in range(1,4) for r in api("GET",f"/repos/{DST}/releases?per_page=100&page={page}")}
+selected.update(existing)
+while selected-done:
+    tag=next(iter(selected-done))
+    if tag not in bytag:raise RuntimeError("Unknown manifest dependency: "+tag)
+    for a in bytag[tag]["assets"]:
+        if a["name"].startswith("updates") and a["name"].endswith(".json"):
+            r=requests.get(a["browser_download_url"],timeout=120);r.raise_for_status()
+            manifest=r.text.replace("\\\\/","/")
+            for match in re.findall(r"github.com/nocontentracingdivision/ncrdplugin/releases/download/([^/\\s\\\"]+)/",manifest):
+                selected.add(urllib.parse.unquote(match))
+    done.add(tag)
+releases=[bytag[t] for t in selected]
+print("Active channels and dependencies:",sorted(selected),flush=True)
 head=api("GET",f"/repos/{DST}/git/ref/heads/main")["object"]["sha"]
 allowed=lambda n: n.endswith((".exe",".dll",".simhubdash")) or n in ("SHA256SUMS.txt","NCRD.UpdateFeed.txt") or (n.startswith("updates") and n.endswith(".json")) or (n.startswith("NCRD-Overlays-") and n.endswith("-win-x64.zip"))
 # Oldest first preserves release ordering; explicitly retain the plugin latest channel.
