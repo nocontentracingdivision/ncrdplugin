@@ -1,0 +1,17 @@
+name: Verify public downloads and source privacy
+on:
+  push:
+    paths: ['verify_downloads.py', '.github/workflows/verify.yml']
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+      - run: python -m pip install requests
+      - run: python verify_downloads.py
